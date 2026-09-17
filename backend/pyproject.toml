@@ -1,0 +1,25 @@
+[project]
+name = "maismassa"
+version = "0.3.0"
+description = "MaisMassa - API de gestao de pizzaria"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi (>=0.115)",
+    "uvicorn (>=0.30)",
+    "pydantic (>=2.7)",
+    "sqlalchemy (>=2.0)",
+    "python-dotenv (>=1.0)",
+    "psycopg[binary] (>=3.1)",
+    "bcrypt (>=4.1)",
+    "pyjwt (>=2.9)",
+    "python-multipart (>=0.0.9)",
+    "email-validator (>=2.1)",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
