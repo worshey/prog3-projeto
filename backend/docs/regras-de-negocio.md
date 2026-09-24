@@ -6,10 +6,16 @@ Cada regra abaixo tem um código (`RNxx`) e existe em algum lugar do
 
 ## Cardápio (`app/pizzas`)
 
-### RN01 — Nome não se repete no cardápio
-Não é possível cadastrar duas pizzas com o mesmo nome. Ao criar ou
-renomear uma pizza, o sistema verifica se já existe outra com aquele
-nome e recusa com `NomeJaCadastrado` (HTTP `409`).
+Desde que o cardápio passou a ser por conta (uma pizza sempre pertence
+a quem a cadastrou — ver RN06), toda regra abaixo que fala em "o
+cardápio" quer dizer "o cardápio *daquele* usuário", nunca o de todos.
+
+### RN01 — Nome não se repete no cardápio da mesma conta
+Não é possível cadastrar duas pizzas com o mesmo nome **na mesma
+conta**. Ao criar ou renomear uma pizza, o sistema verifica se já
+existe outra com aquele nome pertencente ao mesmo usuário e recusa com
+`NomeJaCadastrado` (HTTP `409`). Duas contas diferentes podem ter, cada
+uma, uma pizza chamada "Muçarela" sem conflito nenhum.
 
 ### RN02 — Disponibilidade não se edita pelo cardápio
 O campo `disponivel` não pode ser alterado por uma edição comum da
@@ -23,6 +29,23 @@ Uma pizza com `disponivel = False` (fora de estoque no momento) não
 pode ser apagada — ela some da vitrine ao ficar indisponível, mas o
 cadastro continua existindo até voltar ao estoque. A tentativa de
 apagar gera `PizzaIndisponivel` (HTTP `409`).
+
+### RN06 — Toda pizza pertence a quem a cadastrou
+`POST /pizzas/` vincula a pizza criada automaticamente ao usuário do
+token (`usuario_id`), sem o cliente informar isso. `GET /pizzas/`
+devolve só as pizzas do usuário logado, nunca as de outra conta.
+Buscar, editar ou apagar uma pizza que existe mas pertence a outro
+usuário dá o mesmo `PizzaNaoEncontrada` (HTTP `404`) de uma pizza que
+não existe — de propósito, para não revelar que o id pertence a
+alguém (mesma lógica de não vazar pista que a RN05 já aplica no
+login).
+
+### RN07 — Busca e filtro na listagem
+`GET /pizzas/` aceita dois parâmetros de busca opcionais, combináveis
+entre si e sempre restritos ao cardápio do usuário logado (RN06):
+- `nome`: busca parcial e sem diferenciar maiúsculas/minúsculas
+  (`?nome=muça` encontra "Muçarela").
+- `disponivel`: filtra por `true` ou `false`.
 
 ## Contas (`app/usuarios`)
 
